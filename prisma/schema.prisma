@@ -1,0 +1,79 @@
+datasource db {
+  provider = "postgresql"
+
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  // User model definition
+  id String @id @default(uuid()) // Primary key with UUID
+  name String? // Optional name field
+  email String @unique // Unique email field
+  passwordHash String // Password hash field
+  createdAt DateTime @default(now()) // Timestamp of creation
+  updatedAt DateTime @updatedAt // Timestamp of last update
+  deletedAt DateTime? // Optional timestamp for soft deletion if null user active
+  settings UserSettings? // One-to-one relation to UserSettings
+  habits Habit[] // One-to-many relation to Habit
+  dailyLogs DailyLog[] // One-to-many relation to DailyLog
+}
+
+model UserSettings {
+  // UserSettings model definition
+  id String @id @default(uuid()) // Primary key with UUID
+  userId String @unique // Unique foreing key to User model
+  sleepGoalHours Int @default(8) // Sleep goal in hours with default value of 8
+  timezone String @default("America/Sao_Paulo") // Timezone with default value of "America/Sao_Paulo"
+
+  // Relation field to User model
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Habit {
+  id String @id @default(uuid()) // Primary key with UUID
+  userId String // Foreign key to User model
+  name String // Name of the habit
+  description String? // Optional description of the habit
+  isActive Boolean @default(true) // Status of the habit
+  createdAt DateTime @default(now()) // Timestamp of creation
+  updatedAt DateTime @updatedAt // Timestamp of last update
+  deletedAt DateTime? // Optional timestamp for soft deletion if null habit active
+  
+  // Relation field to User model
+  user User @relation(fields: [userId], references: [id])
+
+  // Relation field to DailyHabitCheck model
+  checks DailyHabitCheck[] // One-to-many relation to DailyHabitCheck
+}
+
+model DailyLog {
+ id String @id @default(uuid()) // Primary key with UUID
+  userId String // Foreign key to User model
+  date DateTime // Date of the log
+  sleepHours Float? // Number of hours slept
+  sleepScore Int? // Sleep quality score
+  notes String? // Optional notes for the day
+  createdAt DateTime @default(now()) // Timestamp of creation
+  updatedAt DateTime @updatedAt // Timestamp of last update
+  
+  // Relation field to User model
+  user User @relation(fields: [userId], references: [id])
+
+  checks DailyHabitCheck[] // One-to-many relation to DailyHabitCheck
+}
+
+model DailyHabitCheck {
+  id String @id @default(uuid()) // Primary key with UUID
+  dailyLogId String // Foreign key to DailyLog model
+  habitId String // Foreign key to Habit model
+  completed Boolean @default(false) // Status of the habit check
+
+  // Relation fields
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id])
+  habit Habit @relation(fields: [habitId], references: [id])
+
+  @@unique([dailyLogId, habitId]) // Composite unique constraint to prevent duplicate checks for the same habit on the same day
+}
