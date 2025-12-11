@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   IsEmail,
   IsNotEmpty,
@@ -6,19 +5,30 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// DTO usado para representar os dados de entrada do cadastro de usuário
+// DTO usado para receber os dados de cadastro de usuário
 export class SignUpDto {
-  // Nome é opcional
+  @ApiPropertyOptional({
+    description: 'Nome do usuário',
+    example: 'Adriano Vale',
+  })
   @IsOptional()
   @IsString()
   name?: string;
 
-  // Email obrigatório e em formato válido
+  @ApiProperty({
+    description: 'Email do usuário (precisa ser único)',
+    example: 'adriano@example.com',
+  })
   @IsEmail()
   email: string;
 
-  // Senha obrigatória com pelo menos 6 caracteres
+  @ApiProperty({
+    description: 'Senha de acesso, mínimo 6 caracteres',
+    minLength: 6,
+    example: 'minhasenha',
+  })
   @IsNotEmpty()
   @MinLength(6)
   password: string;
