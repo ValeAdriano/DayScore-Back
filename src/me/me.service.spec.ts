@@ -1,14 +1,18 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
-import { UserResponseDto } from "src/auth/dto/user-response.dto"; // Importa o DTO de resposta do usuário
+import { Test, TestingModule } from '@nestjs/testing';
+import { MeService } from './me.service';
 
-@Injectable()
-export class MeService {
-  constructor(private readonly prisma: PrismaService) {}
+describe('MeService', () => {
+  let service: MeService;
 
-  async getProfile(userId: string): Promise<UserResponseDto> {
-  
-  
-  }
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [MeService],
+    }).compile();
 
-}
+    service = module.get<MeService>(MeService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
