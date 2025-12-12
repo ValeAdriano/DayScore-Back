@@ -47,6 +47,11 @@ model Habit {
 
   // Relation field to DailyHabitCheck model
   checks DailyHabitCheck[] // One-to-many relation to DailyHabitCheck
+
+  // CREATE DATA
+  // UserID
+  // Name
+  // Description
 }
 
 model DailyLog {
